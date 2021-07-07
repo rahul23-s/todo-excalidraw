@@ -7,13 +7,15 @@ const Todo = () => {
   const [AllTodos, setAllTodos] = useState([]);
 
   useEffect(() => {
-    Axios.get("http://localhost:3001/todo").then((responseData) => {
-      setAllTodos(responseData.data);
-    });
+    Axios.get("https://todo-excalidraw.herokuapp.com/todo").then(
+      (responseData) => {
+        setAllTodos(responseData.data);
+      }
+    );
   }, [AllTodos]);
 
   const addTodo = () => {
-    Axios.post("http://localhost:3001/addtodo", {
+    Axios.post("https://todo-excalidraw.herokuapp.com/addtodo", {
       TodoTitle: Todo,
     });
     setTodo("");
@@ -28,11 +30,11 @@ const Todo = () => {
   };
 
   const markComplete = (id) => {
-    Axios.put("http://localhost:3001/mark", { id: id });
+    Axios.put("https://todo-excalidraw.herokuapp.com/mark", { id: id });
     setAllTodos(["updated"]);
   };
   const deleteTodo = (id) => {
-    Axios.delete(`http://localhost:3001/delete/${id}`);
+    Axios.delete(`https://todo-excalidraw.herokuapp.com/delete/${id}`);
     setAllTodos(["deleted"]);
   };
 
