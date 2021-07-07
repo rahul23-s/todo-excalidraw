@@ -256,7 +256,7 @@ const TodoList = styled.table`
     th,
     td,
     tr div {
-      font-size: 2.5px;
+      font-size: 10px;
     }
 
     height: fit-content;
@@ -264,13 +264,14 @@ const TodoList = styled.table`
     .todo-title,
     .todo-title div {
       padding: 2px;
-      font-size: 4px;
+      font-size: 12px;
       word-wrap: break-word;
       overflow: contain;
     }
 
     .todo-title {
-      max-width: 55vw;
+      width: 100%;
+      /* max-width: 75vw; */
       overflow-wrap: break-word;
 
       div {
