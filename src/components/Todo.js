@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Axios from "axios";
+import Loading from "./Loading";
 
 const Todo = () => {
   const [Todo, setTodo] = useState("");
   const [AllTodos, setAllTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     Axios.get("https://todo-excalidraw.herokuapp.com/todo").then(
       (responseData) => {
         setAllTodos(responseData.data);
+        setLoading(false);
       }
     );
-  }, [AllTodos]);
+  }, [loading]);
 
   const addTodo = () => {
+    setDone(false);
+    setLoading(true);
     Axios.post("https://todo-excalidraw.herokuapp.com/addtodo", {
       TodoTitle: Todo,
     });
     setTodo("");
-    setAllTodos(["updated"]);
+    setTimeout(() => {
+      setDone(true);
+    }, 1500);
   };
 
   const handleKeypress = (e) => {
@@ -30,12 +38,20 @@ const Todo = () => {
   };
 
   const markComplete = (id) => {
+    setDone(false);
+    setLoading(true);
     Axios.put("https://todo-excalidraw.herokuapp.com/mark", { id: id });
-    setAllTodos(["updated"]);
+    setTimeout(() => {
+      setDone(true);
+    }, 1500);
   };
   const deleteTodo = (id) => {
+    setDone(false);
+    setLoading(true);
     Axios.delete(`https://todo-excalidraw.herokuapp.com/delete/${id}`);
-    setAllTodos(["deleted"]);
+    setTimeout(() => {
+      setDone(true);
+    }, 1500);
   };
 
   return (
@@ -70,47 +86,53 @@ const Todo = () => {
               <th>Completed On</th>
             </tr>
           </thead>
-          <tbody>
-            {AllTodos.map((val, key) => {
-              return (
-                <tr key={val._id}>
-                  <td className="todo-title">
-                    ⦿&emsp;{val.TodoTitle}
-                    <div>
+          {loading && !done ? (
+            <div className="loading">
+              <Loading />
+            </div>
+          ) : (
+            <tbody>
+              {AllTodos.map((val, key) => {
+                return (
+                  <tr key={val._id}>
+                    <td className="todo-title">
+                      ⦿&emsp;{val.TodoTitle}
+                      <div>
+                        {val.Status ? (
+                          <i
+                            className="fas fa-clipboard-check"
+                            style={{ color: "#00e600" }}
+                          ></i>
+                        ) : (
+                          <i
+                            onClick={() => markComplete(val._id)}
+                            className="fas fa-clipboard-check"
+                          ></i>
+                        )}
+                        <i
+                          className="fas fa-trash-alt"
+                          onClick={() => deleteTodo(val._id)}
+                          style={{ color: "#cd0000" }}
+                        ></i>
+                      </div>
+                    </td>
+                    <td>
                       {val.Status ? (
                         <i
-                          className="fas fa-clipboard-check"
+                          className="fas fa-check-circle"
                           style={{ color: "#00e600" }}
                         ></i>
                       ) : (
-                        <i
-                          onClick={() => markComplete(val._id)}
-                          className="fas fa-clipboard-check"
-                        ></i>
+                        "Pending"
                       )}
-                      <i
-                        className="fas fa-trash-alt"
-                        onClick={() => deleteTodo(val._id)}
-                        style={{ color: "#cd0000" }}
-                      ></i>
-                    </div>
-                  </td>
-                  <td>
-                    {val.Status ? (
-                      <i
-                        className="fas fa-check-circle"
-                        style={{ color: "#00e600" }}
-                      ></i>
-                    ) : (
-                      "Pending"
-                    )}
-                  </td>
-                  <td>{val.Created}</td>
-                  <td>{val.Completed === null ? "-" : val.Completed}</td>
-                </tr>
-              );
-            })}
-          </tbody>
+                    </td>
+                    <td>{val.Created}</td>
+                    <td>{val.Completed === null ? "-" : val.Completed}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          )}
         </TodoList>
       </Content>
     </Container>
@@ -243,6 +265,15 @@ const TodoList = styled.table`
     height: fit-content;
   }
 
+  .loading {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 20vw;
+  }
+
   .todo-title {
     display: flex;
     align-items: center;
@@ -267,6 +298,9 @@ const TodoList = styled.table`
       font-size: 12px;
       word-wrap: break-word;
       overflow: contain;
+    }
+    .loading {
+      padding-left: 0;
     }
 
     .todo-title {
